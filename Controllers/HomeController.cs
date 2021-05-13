@@ -9,6 +9,7 @@ using WebAppOpenIDConnectDotNet;
 using Azure.Storage.Blobs;
 using System.Text;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace WebApp_OpenIDConnect_DotNet.Controllers
 {
@@ -29,21 +30,27 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
+            ViewData["Message"] = "Demo using AAD to connect Azure Blob storage";
             return View();
         }
 
         [AuthorizeForScopes(Scopes = new string[] { "https://storage.azure.com/user_impersonation" })]
-        public async Task<IActionResult> Blob()
+        public IActionResult Blob()
         {
-            string message = await CreateBlob(new TokenAcquisitionTokenCredential(_tokenAcquisition));
-            ViewData["Message"] = message;
+            ViewData["Message"] = "Try upload a file";
             return View();
         }
+        [HttpPost]
+        public async Task<JsonResult> BlobUpload(IFormFile file)
+        {
+            string message = await CreateBlob(new TokenAcquisitionTokenCredential(_tokenAcquisition));
+            return Json(new {data="hihi"});
+        }
+
 
         private static async Task<string> CreateBlob(TokenAcquisitionTokenCredential tokenCredential)
         {
-            Uri blobUri = new Uri("https://blobstorageazuread123.blob.core.windows.net/sample-container/Blob1.txt");
+            Uri blobUri = new Uri("https://cshuicantonresturant.blob.core.windows.net/testclient/Blob1.txt");
             BlobClient blobClient = new BlobClient(blobUri, tokenCredential);
 
             string blobContents = "Blob created by Azure AD authenticated user.";
@@ -51,7 +58,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
             using (MemoryStream stream = new MemoryStream(byteArray))
             {
-                await blobClient.UploadAsync(stream);
+                await blobClient.UploadAsync(stream, overwrite: true);
             }
             return "Blob successfully created";
         }

@@ -3,10 +3,42 @@
 }
 
 <h2>@ViewData["Title"]</h2>
-<h3>@ViewData["Message"]</h3>
+<h3 id="uploadLabel">@ViewData["Message"]</h3>
+<div id="upload-file">
+    <label class="btn btn-default">
+        Browse <input type="file" id="uploadFile">
+    </label>
+    <button type="button" id="uploadButton" class="btn btn-default" aria-label="Left Align">
+            <span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>
+    </button>
+</div>
 
+@section scripts {
+    <script type="text/javascript">
+    $(function () {
+        $('#uploadButton').click(function (){
+            var formData = new FormData();
+            formData.append('file', $('#myfile')[0].files[0]);;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("BlobUpload", "Home")',
+                data: formData,
+                success: function () {
+                    console.log("hi-hi"),
+                    $('uploadLabel').text("File Uploaded")
+                },
+                error: function () {
+                    alert ("Error in ajax")
+                }
 
-<address>
+            })
+        })
+
+    })
+    </script>
+}
+
+@* <address>
     One Microsoft Way<br />
     Redmond, WA 98052-6399<br />
     <abbr title="Phone">P:</abbr>
@@ -16,4 +48,4 @@
 <address>
     <strong>Support:</strong> <a href="mailto:Support@example.com">Support@example.com</a><br />
     <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-</address>
+</address> *@
