@@ -54,10 +54,10 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
             return Json(new {filename = filename});
         }
 
-        public async Task<JsonResult> GetSAS(FileModel model)
+        public async Task<JsonResult> GetSAS([FromQuery] string filename)
         {
-            Uri uri = await GetUserDelegationSasBlob(new TokenAcquisitionTokenCredential(_tokenAcquisition), model.filename);
-            return Json(new {URI= uri});
+            Uri uri = await GetUserDelegationSasBlob(new TokenAcquisitionTokenCredential(_tokenAcquisition), filename);
+            return Json(new {URI= uri, nameof=filename});
         }
 
 
@@ -81,14 +81,14 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         {
             public string filename { get; set; }
         }
-        private static async Task<Uri> GetUserDelegationSasBlob(TokenAcquisitionTokenCredential tokenCredential, string blobname)
+        private static async Task<Uri> GetUserDelegationSasBlob(TokenAcquisitionTokenCredential tokenCredential, string blobName)
         {
             // BlobServiceClient blobServiceClient =
             //     blobClient.GetParentBlobContainerClient().GetParentBlobServiceClient();
             Uri blobUri = new Uri("https://cshuicantonresturant.blob.core.windows.net");
             var blobServiceClient = new BlobServiceClient(blobUri, tokenCredential);
             var containerClient = blobServiceClient.GetBlobContainerClient("testclient");
-            var blobClient = containerClient.GetBlobClient(blobname);
+            var blobClient = containerClient.GetBlobClient(blobName);
             // Get a user delegation key for the Blob service that's valid for 7 days.
             // You can use the key to generate any number of shared access signatures 
             // over the lifetime of the key.

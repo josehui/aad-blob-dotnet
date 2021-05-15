@@ -37,7 +37,7 @@
                 processData: false,
                 contentType: false,
                 success: function (result) {
-                    console.log("hi-hi"),
+                    console.log(result),
                     baseFileName = result.filename,
                     $('#uploadLabel').text("File Uploaded: " + result.filename),
                     $('#uploadFile').val('')
@@ -54,16 +54,12 @@
 
     $(function () {
         $('#generateLinkButton').click(function (){
-            var data = { "filename": baseFileName};
             $.ajax({
                 type: 'GET',
                 url: '@Url.Action("GetSAS", "Home")',
-                data: JSON.stringify(data),
-                datatype: 'JSON',
-                contentType: "application/json",
+                data: { "filename": baseFileName},
                 success: function (result) {
                     console.log(result),
-                    console.log(result.uri),
                     $('#SASLabel').text("Link Generated")
                     $('#SASLink').text(result.uri),
                     $('#SASLink').attr("href", result.uri)
